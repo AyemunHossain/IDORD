@@ -1,5 +1,7 @@
+asgiref==3.5.0
 attrs==21.4.0
 Automat==20.2.0
+backports.zoneinfo==0.2.1
 beautifulsoup4==4.10.0
 certifi==2021.10.8
 cffi==1.15.0
@@ -7,6 +9,7 @@ charset-normalizer==2.0.12
 constantly==15.1.0
 cryptography==36.0.1
 cssselect==1.1.0
+filelock==3.6.0
 h2==3.2.0
 hpack==3.0.0
 hyperframe==5.2.0
@@ -28,14 +31,16 @@ PyDispatcher==2.0.5
 pyOpenSSL==22.0.0
 queuelib==1.6.2
 requests==2.27.1
+requests-file==1.5.1
 Scrapy==2.5.1
 scrapy-proxy-pool==0.1.9
 scrapy-user-agents==0.1.1
 service-identity==21.1.0
 six==1.16.0
 soupsieve==2.3.1
-Twisted==22.1.0
-twisted-iocpsupport==1.0.2
+sqlparse==0.4.2
+tldextract==3.2.0
+Twisted==22.2.0
 typing_extensions==4.1.1
 ua-parser==0.10.0
 urllib3==1.26.8

@@ -19,22 +19,21 @@ class colors:
     UNDERLINE = '\033[4m'
 
 
-x = subprocess.check_output(['scrapy', 'crawl', 'prothomalo'], cwd='idord_infograther/')
+# x = subprocess.check_output(['scrapy', 'crawl', 'prothomalo'], cwd='idord_infograther/')
 
-print(f">>>>>>>>>>>>>>>>>{x}>>>>>>>>>>>>>>")
+# print(f">>>>>>>>>>>>>>>>>{x}>>>>>>>>>>>>>>")
 
-print(colors.WARNING + "Warning: No active frommets remain. Continue?" + colors.ENDC)
 
 
 
 #Below this for Production 
-# from subprocess import Popen, PIPE
+from subprocess import Popen, PIPE
 
 
-# print("Step 1/X")
-# p = Popen(['scrapy', 'crawl', 'prothomalo'], stdout=PIPE, stderr = PIPE)
-# output = p.communicate()[0]
-# if p.returncode != 0: 
-#     print("> Setp Failed")
-# else:
-#     print("> Setp 1 Completed Successfully")
+print("Step 1/X")
+p = Popen(['scrapy', 'crawl', 'prothomalo'],cwd='idord_infograther/', stdout=PIPE, stderr = PIPE)
+output = p.communicate()[0]
+if p.returncode != 0: 
+    print("> Setp Failed")
+else:
+    print("> Setp 1 Completed Successfully")

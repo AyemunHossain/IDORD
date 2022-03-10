@@ -76,11 +76,11 @@ DOWNLOADER_MIDDLEWARES = {
 
 ITEM_PIPELINES = {
     'idord_infograther.pipelines.LinkPipeLine': 300,
-    'idord_infograther.pipelines.FiledownloadPipeline': 290,
+    # 'idord_infograther.pipelines.FiledownloadPipeline': 290,
     
 }
 
-FILES_STORE = r"C:\Users\Ashik\Desktop\IDORD\idord_infograther"
+FILES_STORE = r"/home/cyrus/Desktop/test/IDORD"
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html

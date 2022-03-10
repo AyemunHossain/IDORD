@@ -1,0 +1,26 @@
+keyword on link to focus for action:
+1. user
+2. blog
+3. post
+4. info
+5. profile
+6. id
+7. obj
+8. object
+9. query
+10. create
+11. post
+12. delete
+13. edit
+14. retrive
+15. get
+16. put
+17. patch
+18. del
+19. :id
+20. 
+
+
+
+pip install git+https://github.com/mhammond/pywin32
+twisted-iocpsupport
