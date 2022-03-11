@@ -31,7 +31,7 @@ from subprocess import Popen, PIPE
 
 
 print("Step 1/X")
-p = Popen(['scrapy', 'crawl', 'prothomalo'],cwd='idord_infograther/', stdout=PIPE, stderr = PIPE)
+p = Popen(['scrapy', 'crawl','railsgoatNotLogin'],cwd='idord_infograther/', stdout=PIPE, stderr = PIPE)
 output = p.communicate()[0]
 if p.returncode != 0: 
     print("> Setp Failed")

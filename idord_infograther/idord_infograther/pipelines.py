@@ -37,20 +37,21 @@ class LinkPipeLine:
                               );
                           """)
 
+#                                   self.curr.execute("""
+#                           CREATE TABLE linkT (
+#                             # link_id INTEGER PRIMARY KEY AUTOINCREMENT,
+#                             link TEXT NOT NULL);
+# );
+#                           """)
+
         # self.curr.execute("""
         #                   CREATE TABLE linkT(
         #                       link text NOT NULL,
         #                       UNIQUE (link)
         #                       )
         #                   """)
+        
     def store_db(self,item):
-        print("-----------------------------------------------------------------")
-        print(f"item: {item}")
-        # print(f"item[0]: {item[0]}")
-        # print(f"item.link: {item.link}")
-        # print(f"item[0].link: {item[0].link}")
-        # print(f"item.link[0]: {item.link[0]}")
-        print("-----------------------------------------------------------------")
         for link in item['link']:
             self.curr.execute("""
                     INSERT INTO linkT VALUES(?)""",(link,))

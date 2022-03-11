@@ -12,7 +12,7 @@ class IdordInfogratherItem(scrapy.Item):
     pass
 
 
-class prothomalolink(scrapy.Item):
+class hreflink(scrapy.Item):
     link = scrapy.Field()
     
 
