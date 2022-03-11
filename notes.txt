@@ -19,8 +19,3 @@ keyword on link to focus for action:
 18. del
 19. :id
 20. 
-
-
-
-pip install git+https://github.com/mhammond/pywin32
-twisted-iocpsupport

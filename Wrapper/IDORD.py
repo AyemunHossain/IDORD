@@ -34,7 +34,7 @@ print("Step 1/X")
 # p = Popen(['scrapy', 'crawl','railsgoatNotLogin'],cwd='idord_infograther/', stdout=PIPE, stderr = PIPE)
 
 
-p = Popen(['scrapy', 'crawl','railsgoatNotLogin'],cwd='idord_infograther/', stdout=PIPE, stderr = PIPE)
+p = Popen(['scrapy', 'crawl','signupRailsgoat'],cwd='idord_infograther/', stdout=PIPE, stderr = PIPE)
 
 output = p.communicate()[0]
 
