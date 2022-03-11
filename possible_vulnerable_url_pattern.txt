@@ -1,15 +1,14 @@
-# Possible Insecure Direct Object reference vulnerable URL
-  * www.xyz.com/myaccount/uid=12
-  * http://www.example.com/photos/002548
-  * https://www.e-commerce.com/item/193422 
-  * http://webapp.com/app/accountInfo?acct=admin
-  * https://www.example.com/transaction.php?id=74656
-  * https://www.example.com/change_password.php?userid=1701
-  * https://www.example.com/display_file.php?file.txt
-  * https://bank/balance?acc=123
-  * http://foo.bar/changepassword?user=someuser
-  * http://foo.bar/showImage?img=img00011
-  * http://foo.bar/accessPage?menuitem=12
-  * https://www.example.com/accountInfo/accId=2
-  * http://testsite.com/testpage?invoiceId=12345
-  * http://testsite.com/app/accountInfo?act=requestor
+/myaccount/uid=12
+/photos/002548
+/item/193422 
+/app/accountInfo?acct=admin
+/transaction.php?id=74656
+/change_password.php?userid=1701
+/display_file.php?file.txt
+/balance?acc=123
+/changepassword?user=someuser
+/showImage?img=img00011
+/accessPage?menuitem=12
+/accountInfo/accId=2
+/testpage?invoiceId=12345
+/app/accountInfo?act=requestor

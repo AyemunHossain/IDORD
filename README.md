@@ -15,6 +15,14 @@ pip install -r requirements.txt
 
 #Active the virtual env
 
-RUN: py IDORD.py 
+RUN: cd Wrapper 
+RUN: python3 manage.py crawl
+#bang bang
+```
+
+```sh
+
+RUN: python3 manage.py makemigrations
+RUN: python3 manage.py migrate
 #bang bang
 ```
