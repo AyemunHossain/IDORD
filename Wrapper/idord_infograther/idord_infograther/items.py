@@ -5,10 +5,14 @@
 
 import scrapy
 from scrapy_djangoitem import DjangoItem
-from core.models import LinkItem
+from core.models import LinkItem, FormDetailsItem
 
 class HLinkItem(DjangoItem):
     django_model = LinkItem
+
+
+class FormDetailsItem(DjangoItem):
+    django_model = FormDetailsItem
 
 
 class FiledownloadItem(scrapy.Item):

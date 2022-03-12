@@ -1,39 +1,51 @@
 import scrapy
-from ..items import LinkItem
+from ..items import *
 from scrapy.http import FormRequest
 
 class SingupRailsGoat(scrapy.Spider):
 
     name = "signupRailsgoat"
 
-    def __init__(self, config_file = None, *args, **kwargs):                    
+    def __init__(self, start_url= None,config_file = None, *args, **kwargs):                    
         super(SingupRailsGoat, self).__init__(*args, **kwargs)   
-        self.start_urls = ["http://0.0.0.0:3000/signup/"]
+        self.start_url = start_url+"/signup"
 
     
     def start_requests(self):
-        for url in self.start_urls:
-            yield scrapy.Request(url=url, callback=self.parse)
-
+        
+        yield scrapy.Request(url=self.start_url, callback=self.parse)
+        
 
     def parse(self, response, **kwargs):
-        token = response.css('form input').extract_first()
-        print(f"------------{token}---------")
-        # return FormRequest.from_response(response,formdata={
-        #     'csrf_token':token,
-        #     'username':'afasdfsdfddfdsaf',
-        #     'password':'asfdffsfsdfsdf',},callback=self.start_crawling_after_login)
+        form = response.css('form')
+        
+        if (form !="" or form !=None):
+            typ = form.css('form::attr(method)').extract()
+            for i in range(len(typ)):
+                
+                if (str(typ[i]).lower()=="post"):
+                    form = response.css('form')
+                    items = FormDetailsItem()
 
-    # def start_crawling_after_login(self,response):
-    #     items = QuotetItem()
-    #     all_div = response.css('div.quote')
 
-    #     for div in all_div:
-    #         title = div.css('span.text::text').extract()
-    #         author = div.css('.author::text').extract()
-    #         tag = div.css('.tag::text').extract()
+                    items['page_link'] =  self.start_url
+                    items['link'] = form.css('form::attr(action)').extract()[0]
 
-    #         items['title'] = title
-    #         items['author'] = author
-    #         items['tag'] = tag
-    #         yield items
+                    auth =  ['signup','signin','login','create','crate-account']
+
+                    for q in auth:
+                        
+                        if(q in items['link']):
+                            items['is_auth_related'] =True
+                            break
+
+                        if(q in self.start_url):
+                            items['is_auth_related'] =True
+                            break
+
+                        elif (q in str(form)):
+                            items['is_auth_related'] =True
+                            break
+
+                    items['type'] = 'post'
+                    yield items

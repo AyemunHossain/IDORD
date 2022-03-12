@@ -84,7 +84,7 @@ DOWNLOADER_MIDDLEWARES = {
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
 ITEM_PIPELINES = {
-    'idord_infograther.pipelines.LinkPipeLine': 300,
+    'idord_infograther.pipelines.multiperpousePipeline': 300,
     # 'idord_infograther.pipelines.FiledownloadPipeline': 290,
     
 }

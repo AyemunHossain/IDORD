@@ -1,62 +1,29 @@
 from itemadapter import ItemAdapter
 import sqlite3
 from scrapy.pipelines.files import FilesPipeline
-
+from core.models import LinkActionItem, LinkActionItemResponse, FormItem, FormDetailsItem, LinkItem
 
 # A demo pipeline which can create a table and store data in it
-class LinkPipeLine:
+class multiperpousePipeline:
     
     def process_item(self, item, spider):
         model_class = getattr(item, 'django_model')
-        for link in item['link']:
-            obj = model_class.objects.create(link=link)
-            obj.save()
-        return item
-
-#     def __init__(self):
-#         self.create_connection()
-#         self.create_table()
-
-#     def process_item(self, item, spider):
-#         self.store_db(item)
-#         return item
-
-#     def create_connection(self):
-#         self.conn = sqlite3.connect("myspiderstore.sqlite3")
-#         self.curr = self.conn.cursor()
-
-#     def create_table(self):
-#         self.curr.execute("""
-#                           DROP TABLE IF EXISTS linkT
-#                           """)
-
-#         self.curr.execute("""
-#                           CREATE TABLE linkT(
-#                               link text 
-#                               );
-#                           """)
-
-# #                                   self.curr.execute("""
-# #                           CREATE TABLE linkT (
-# #                             # link_id INTEGER PRIMARY KEY AUTOINCREMENT,
-# #                             link TEXT NOT NULL);
-# # );
-# #                           """)
-
-#         # self.curr.execute("""
-#         #                   CREATE TABLE linkT(
-#         #                       link text NOT NULL,
-#         #                       UNIQUE (link)
-#         #                       )
-#         #                   """)
-        
-#     def store_db(self,item):
-#         for link in item['link']:
-#             self.curr.execute("""
-#                     INSERT INTO linkT VALUES(?)""",(link,))
-#         self.conn.commit()
         
 
+        if (model_class.__dict__==LinkItem.__dict__):
+            for link in item['link']:
+                obj = model_class.objects.create(link=link)
+                obj.save()
+            return item
+
+        elif(model_class.__dict__==FormDetailsItem.__dict__):
+            try:
+                obj = model_class.objects.create(link=item['link'], page_link=item['page_link'], type=item['type'], is_auth_related=item['is_auth_related'])
+                obj.save()
+            except Exception as E:
+                print(f"_______________________{E}________________________________")
+            return item
+        
 
 class FiledownloadPipeline(FilesPipeline):
     

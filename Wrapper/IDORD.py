@@ -28,18 +28,27 @@ class colors:
 
 #Below this for Production 
 from subprocess import Popen, PIPE
-
+import sys
+import os
 
 print("Step 1/X")
 # p = Popen(['scrapy', 'crawl','railsgoatNotLogin'],cwd='idord_infograther/', stdout=PIPE, stderr = PIPE)
 
+url = sys.argv[1]
+print(f"================={url}================")
 
-p = Popen(['scrapy', 'crawl','signupRailsgoat'],cwd='idord_infograther/', stdout=PIPE, stderr = PIPE)
+# os.system(f"cd idord_infograther && scrapy crawl railsgoatNotLogin")
+# os.system(f"cd idord_infograther && scrapy crawl signupRailsgoat -a start_url={url}")
+os.system(f"cd idord_infograther && scrapy crawl railsgoatLogin")
 
-output = p.communicate()[0]
 
-if p.returncode != 0: 
-    print(f'------------{p.communicate()}-------------')
-    print("> Setp Failed")
-else:
-    print("> Setp 1 Completed Successfully")
+
+# p = Popen(['scrapy', 'crawl','signupRailsgoat','-a',f'start_url={url}',],cwd='idord_infograther/', stdout=PIPE, stderr = PIPE)
+
+# output = p.communicate()[0]
+
+# if p.returncode != 0: 
+#     print(f'------------{p.communicate()}-------------')
+#     print("> Setp Failed")
+# else:
+#     print("> Setp 1 Completed Successfully")
