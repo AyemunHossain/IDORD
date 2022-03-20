@@ -1,0 +1,43 @@
+for form detection and save data:
+form = response.css('form')
+        
+        if (form !="" or form !=None):
+            typ = form.css('form::attr(method)').extract()
+            for i in range(len(typ)):
+                
+                if (str(typ[i]).lower()=="post"):
+                    form = response.css('form')
+                    items = FormDetailsItem()
+
+
+                    items['page_link'] =  self.start_url
+                    items['link'] = form.css('form::attr(action)').extract()[0]
+
+                    auth =  ['signup','signin','login','create','crate-account']
+
+                    for q in auth:
+                        
+                        if(q in items['link']):
+                            items['is_auth_related'] =True
+                            break
+
+                        if(q in self.start_url):
+                            items['is_auth_related'] =True
+                            break
+
+                        elif (q in str(form)):
+                            items['is_auth_related'] =True
+                            break
+
+                    items['type'] = 'post'
+                    yield items
+
+
+
+
+
+
+
+
+
+

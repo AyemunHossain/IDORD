@@ -35,6 +35,10 @@ class CrawlRailsGoat(scrapy.Spider):
 
     def start_crawling_after_login(self,response):
         
-        # items = QuotetItem()
+        item = HLinkItem()
         links_after_login = response.css('a::attr(href)').extract()
-        print(links_after_login)
+        for link in links_after_login:
+            print(f"-----{link}")
+            item['link'] = link
+            item['tag'] = 'after_login'
+            yield item

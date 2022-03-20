@@ -39,6 +39,9 @@ print(f"================={url}================")
 
 # os.system(f"cd idord_infograther && scrapy crawl railsgoatNotLogin")
 # os.system(f"cd idord_infograther && scrapy crawl signupRailsgoat -a start_url={url}")
+
+os.system(f"python3 manage.py makemigrations")
+os.system(f"python3 manage.py migrate")
 os.system(f"cd idord_infograther && scrapy crawl railsgoatLogin")
 
 

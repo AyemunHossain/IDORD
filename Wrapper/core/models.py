@@ -5,6 +5,9 @@ from django.db import models
 
 
 class BaseInformation(models.Model):
+    """
+    This class contains the base information of the crawling webiste
+    """
     domain = models.CharField(max_length=500,unique=True)
     hompage = models.CharField(max_length=500,unique=True)
     signin = models.CharField(max_length=500,unique=True)
@@ -16,6 +19,9 @@ class BaseInformation(models.Model):
 
 
 class LinkItem(models.Model):
+    """
+    This models is for public link 
+    """
     link = models.CharField(max_length=500,unique=True)
     tag = models.CharField(max_length=150, blank=True, null=True)
 
@@ -27,12 +33,15 @@ class FormItem(models.Model):
     link = models.CharField(max_length=250)
     type = models.CharField(max_length=250, blank=True, null=False)
     is_auth_related = models.BooleanField(default=False)
-
+    tag = models.CharField(max_length=150, blank=True, null=True)
     class Meta:
         verbose_name = "Form Iteam"
 
 
 class FormDetailsItem(models.Model):
+    """
+    This model is for form link and it's details
+    """
     link = models.CharField(max_length=250,unique=True)
     page_link = models.CharField(max_length=300)
     type = models.CharField(max_length=250)
@@ -51,16 +60,27 @@ class Actions(models.Model):
 
 
 class LinkActionItem(models.Model):
+    """
+    This is a model that have the trace of the link and it's action's.
+    """
     link = models.CharField(max_length=500,unique=True)
-    type = models.ManyToManyField(Actions)
+    action_type = models.ManyToManyField(Actions)
+    is_loggedin = models.CharField(max_length=150, blank=True, null=True)
+    full_page = models.TextField(blank=True, null=True)
+    
+    started_time = models.DateField(auto_now_add=True)
+    completed_time = models.DateField(auto_now_add=True)
     
     class Meta:
         verbose_name = "Link Action Iteam"
 
 class LinkActionItemResponse(models.Model):
+    """
+    This model is for the response of the server that we attacked.
+    """
     action = models.ForeignKey(LinkActionItem, on_delete=models.DO_NOTHING)
     status = models.CharField(max_length=50)
-
+    full_page = models.TextField(blank=True, null=True)
     
     class Meta:
         verbose_name = "Link Action Iteam Response"

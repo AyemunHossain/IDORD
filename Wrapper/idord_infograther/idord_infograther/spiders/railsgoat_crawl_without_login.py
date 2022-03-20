@@ -27,7 +27,6 @@ class CrawlRailsGoat(scrapy.Spider):
             if(method[0]=="post"):
                 link = form.css('::attr(action)').extract()
                 item['link'] = link
-                print(link)
                 yield item
 
         for form in from_links:

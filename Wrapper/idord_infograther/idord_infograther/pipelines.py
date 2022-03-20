@@ -11,9 +11,8 @@ class multiperpousePipeline:
         
 
         if (model_class.__dict__==LinkItem.__dict__):
-            for link in item['link']:
-                obj = model_class.objects.create(link=link)
-                obj.save()
+            obj = model_class.objects.create(link=item['link'],tag=(item['tag'] or None))
+            obj.save()
             return item
 
         elif(model_class.__dict__==FormDetailsItem.__dict__):
