@@ -19,3 +19,10 @@ keyword on link to focus for action:
 18. del
 19. :id
 20. 
+
+
+
+RegEx for detecting the query parameters on the url: (\?|\&)([^=]+)\=([^&]+)
+
+
+(\\|\\)([^\]+)\\([^\\]+) = This is wroking for user/22/edit types but have one issue
