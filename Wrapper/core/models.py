@@ -16,28 +16,28 @@ class BaseInformation(models.Model):
     class Meta:
         verbose_name = "Base Information"
 
+class LoggedInUser(models.Model):
+    """
+    This class contains the base information of the crawling webiste
+    """
+    username      = models.CharField(max_length=500,unique=True)
+    user_id     = models.CharField(max_length=500,unique=True)
+
+    class Meta:
+        verbose_name = "Logged In User Information"
+
+
 
 class LinkItem(models.Model):
     """
-    This models is for public link 
+    This models is for link with object: link id/1, id=12 
     """
     link                        = models.CharField(max_length=500,unique=True)
     tag                         = models.CharField(max_length=150, blank=True, null=True)
     link_location               = models.CharField(max_length=250) #like we found this link on nav bar
     link_location_method        = models.CharField(max_length=250) #like we found this link in a place where get request is calling, or post body is posting
-
-    class Meta:
-        verbose_name = "Link Iteam"
-
-
-class ObjectedLinkItem(models.Model):
-    """
-    This models is for any link 
-    """
-    base_link       = models.CharField(max_length=500,unique=True)
-    obj             = models.PositiveBigIntegerField(blank=True, null=True)
-    tag             = models.CharField(max_length=150, blank=True, null=True)
-
+    obj                         = models.PositiveBigIntegerField(blank=True, null=True)
+    
     class Meta:
         verbose_name = "Link Iteam"
 
@@ -76,19 +76,26 @@ class LinkActionItem(models.Model):
     This is a model that have the trace of the link and it's action's.
     """
     link                = models.CharField(max_length=500,unique=True)
+    orginal_param       = models.TextField(blank=True, null=True)
+    manupulated_param   = models.TextField(blank=True, null=True)
+    
+    class Meta:
+        verbose_name = "Link Action Iteam"
+
+class LinkAction(models.Model):
+    """
+    This is a model that have the trace of the link and it's action's.
+    """
+    link                = models.CharField(max_length=500,unique=True)
     action_type         = models.ManyToManyField(Actions, default=1)
     is_loggedin         = models.CharField(max_length=150, blank=True, null=True)
     full_page           = models.TextField(blank=True, null=True)
-    
-    orginal_param       = models.TextField(blank=True, null=True)
-    manupulated_param   = models.TextField(blank=True, null=True)
-
-
     started_time        = models.DateField(auto_now_add=True)
     completed_time      = models.DateField(auto_now_add=True)
     
     class Meta:
-        verbose_name = "Link Action Iteam"
+        verbose_name = "Link Action"
+
 
 class LinkActionItemResponse(models.Model):
     """

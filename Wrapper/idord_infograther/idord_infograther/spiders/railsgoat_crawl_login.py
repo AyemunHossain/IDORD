@@ -2,7 +2,6 @@ import scrapy
 from ..items import *
 from scrapy.http import FormRequest
 
-
 class CrawlRailsGoat(scrapy.Spider):
 
     name = "railsgoatLogin"

@@ -26,3 +26,7 @@ RegEx for detecting the query parameters on the url: (\?|\&)([^=]+)\=([^&]+)
 
 
 (\\|\\)([^\]+)\\([^\\]+) = This is wroking for user/22/edit types but have one issue
+
+
+
+get base url = ([\w_-]+(?:(?:\.[\w_-]+)+))
