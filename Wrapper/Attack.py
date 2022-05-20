@@ -87,7 +87,7 @@ def generateAttack():
     try:
         for API_LINK in API_LINKS:
             for i in MAIN_COMMON_PATTERN:
-                print(API_LINK+'/'+str(i))
+                #print(API_LINK+'/'+str(i))
                 try:
                     obj4 = LinkActionItemPost.objects.create(link=(API_LINK+'/'+str(i)))
                     obj4.save()
@@ -95,7 +95,7 @@ def generateAttack():
                     pass
 
     except Exception as e:
-        print(e)
+        pass
             
 generateAttack()
 
@@ -164,8 +164,6 @@ def get_attack():
         except Exception as e:
             pass
 
-
-
 def attack():
     
     headers = {'User-Agent': 'Mozilla/5.0'}
@@ -183,7 +181,7 @@ def post_attack():
     links  = LinkActionItemPost.objects.all()
 
     headers = {'User-Agent': 'Mozilla/5.0'}
-    payload = {'title':'actualHack','name':'actualHackName'}
+    payload = {'title':'actualHack on post method','name':'actualHackName on post method'}
     session = requests.Session()
 
    
@@ -193,7 +191,7 @@ def post_attack():
             if r.status_code == 201:
                 
                 print(f"________IDOR__________POST{l.link}")
-                    #LinkActionItemResponse.objects.create(action=actionItem,status="get_idor",effected_full_page=data.text)
+                LinkActionItemResponse.objects.create(action="post",action_link = l.link,status="post_idor",tag="Hacker Can create a new entry in your database")
                 print("___________________________________________________")
         except:
             pass
@@ -204,15 +202,76 @@ def post_attack():
 
 
 
-
-
-
 def put_attack():
-    pass
+    links  = LinkActionItem.objects.all()
+
+    headers = {'User-Agent': 'Mozilla/5.0'}
+    payload = {'title':'actualHack on put method','name':'actualHackName on put method'}
+    session = requests.Session()
+
+   
+    for l in links:
+        print("")
+        try:
+            r = session.put(l.link,headers=headers,data=payload)
+            if r.status_code == 201:
+                
+                print(f"________IDOR__________PUT{l.link}")
+                    #LinkActionItemResponse.objects.create(action=actionItem,status="get_idor",effected_full_page=data.text)
+                print("___________________________________________________")
+        except:
+            pass
+        # if(r.status_code==200):
+        #     r = r 
+        #     break
+
+
+
 def patch_attack():
-    pass
+    links  = LinkActionItem.objects.all()
+
+    headers = {'User-Agent': 'Mozilla/5.0'}
+    payload = {'title':'actualHack on patch method','name':'actualHackName on patch method'}
+    session = requests.Session()
+
+   
+    for l in links:
+        try:
+            r = session.patch(l.link,headers=headers,data=payload)
+            if r.status_code == 201:
+                
+                print(f"________IDOR__________patch{l.link}")
+                    #LinkActionItemResponse.objects.create(action=actionItem,status="get_idor",effected_full_page=data.text)
+                print("___________________________________________________")
+        except:
+            pass
+        # if(r.status_code==200):
+        #     r = r 
+        #     break
+
+
+
 def delete_attack():
-    pass
+    links  = LinkActionItem.objects.all()
+
+    headers = {'User-Agent': 'Mozilla/5.0'}
+    payload = {'title':'actualHack on delete method','name':'actualHackName on delete method'}
+    session = requests.Session()
+
+   
+    for l in links:
+        try:
+            r = session.delete(l.link,headers=headers,data=payload)
+            if r.status_code == 201:
+                
+                print(f"________IDOR__________Delete{l.link}")
+                    #LinkActionItemResponse.objects.create(action=actionItem,status="get_idor",effected_full_page=data.text)
+                print("___________________________________________________")
+        except:
+            pass
+        # if(r.status_code==200):
+        #     r = r 
+        #     break
 
 
 post_attack()
