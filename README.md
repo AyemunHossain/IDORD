@@ -1,6 +1,6 @@
 # IDROD
 
-## _The Only IDOR tools, Ever_
+## _The Only IDOR tools, Ever Available on public_
 
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
 
