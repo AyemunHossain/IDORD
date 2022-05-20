@@ -1,0 +1,28 @@
+Website and projects that are affected with idor:
+
+1. Railsgoat
+2. http://www.itsecgames.com/
+3. https://github.com/WebGoat/WebGoat
+4. https://sourceforge.net/projects/bwapp/files/bWAPP/
+5 .https://github.com/Contrast-Security-OSS/DjanGoat
+6. https://github.com/blabla1337/skf-labs/blob/master/kbid-268-insecure-direct-object-references.md
+7. https://github.com/blabla1337/skf-labs/tree/master/IDOR
+8. https://github.com/vernjan/webgoat/blob/master/05-idor.md
+9. https://github.com/adeyosemanputra/pygoat
+
+IDOR Issues found in:
+1. https://github.com/monstra-cms/monstra/issues/453
+2. https://github.com/projectsend/projectsend/issues/992
+3. https://github.com/glpi-project/glpi/security/advisories/GHSA-jvwm-gq36-3v7v
+4. https://github.com/glpi-project/glpi/security/advisories/GHSA-wq38-gwxp-8p5p
+5. https://github.com/glpi-project/glpi/security/advisories/GHSA-pqfv-4pvr-55r4
+6. https://github.com/shopware/platform/security/advisories/GHSA-54gp-qff8-946c
+
+IDOR Helping tools:
+1. https://github.com/giuliocomi/PoCIDOR
+2. https://github.com/bugcrowd/HUNT
+
+
+IDOR resoureses:
+1. https://github.com/blaCCkHatHacEEkr/PENTESTING-BIBLE
+2. https://github.com/chzhiyi/security/issues/7

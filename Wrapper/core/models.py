@@ -1,6 +1,3 @@
-from ast import Mod
-from operator import mod
-from pyexpat import model
 from django.db import models
 
 
@@ -32,6 +29,7 @@ class LinkItem(models.Model):
     """
     This models is for link with object: link id/1, id=12 
     """
+    base_link                   = models.CharField(max_length=500, blank=True, null=True)
     link                        = models.CharField(max_length=500,unique=True)
     tag                         = models.CharField(max_length=150, blank=True, null=True)
     link_location               = models.CharField(max_length=250) #like we found this link on nav bar
@@ -43,6 +41,7 @@ class LinkItem(models.Model):
 
 
 class FormItem(models.Model):
+    base_link       = models.CharField(max_length=500, blank=True, null=True)
     link            = models.CharField(max_length=250)
     type            = models.CharField(max_length=250, blank=True, null=False)
     is_auth_related = models.BooleanField(default=False)
@@ -75,12 +74,26 @@ class LinkActionItem(models.Model):
     """
     This is a model that have the trace of the link and it's action's.
     """
-    link                = models.CharField(max_length=500,unique=True)
+    link                = models.CharField(max_length=500,unique=True,)
     orginal_param       = models.TextField(blank=True, null=True)
+    orginal_page        = models.TextField(blank=True, null=True)
     manupulated_param   = models.TextField(blank=True, null=True)
     
     class Meta:
         verbose_name = "Link Action Iteam"
+
+class LinkActionItemPost(models.Model):
+    """
+    This is a model that have the trace of the link and it's action's.
+    """
+    link                = models.CharField(max_length=500,unique=True,)
+    orginal_param       = models.TextField(blank=True, null=True)
+    orginal_page        = models.TextField(blank=True, null=True)
+    manupulated_param   = models.TextField(blank=True, null=True)
+    
+    class Meta:
+        verbose_name = "Link Action Iteam post"
+
 
 class LinkAction(models.Model):
     """
@@ -101,11 +114,12 @@ class LinkActionItemResponse(models.Model):
     """
     This model is for the response of the server that we attacked.
     """
-    action                   = models.ForeignKey(LinkActionItem, on_delete=models.DO_NOTHING)
-
-    status                   = models.CharField(max_length=50)
+    action                   = models.TextField(blank=True, null=True)
+    status                   = models.CharField(max_length=50) #success or not
+    is_idor                  = models.BooleanField(default=True)
+    action_link              = models.CharField(max_length=500,blank=True, null=True)
     effected_full_page       = models.TextField(blank=True, null=True)
-    
+    tag                      = models.TextField(blank=True, null=True)
 
     class Meta:
-        verbose_name = "Link Action Iteam Response"
+        verbose_name = "Link Action Item Response"

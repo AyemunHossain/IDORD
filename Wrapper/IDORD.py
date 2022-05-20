@@ -1,5 +1,9 @@
 import os
 import subprocess
+import sys
+
+
+BASE_DIR = os.getcwd()
 
 class colors:
     """Note you need to add  colors.ENDC every time you changed the color 
@@ -22,12 +26,13 @@ class colors:
 # print(f">>>>>>>>>>>>>>>>>{x}>>>>>>>>>>>>>>")
 
 
+
 #Below this for Production 
 from subprocess import Popen, PIPE
 import sys
 import os
 
-print("Step 1/X")
+print("Step 1/4")
 # p = Popen(['scrapy', 'crawl','railsgoatNotLogin'],cwd='idord_infograther/', stdout=PIPE, stderr = PIPE)
 
 try:
@@ -41,17 +46,41 @@ except:
 
 # os.system(f"python3 Attack.py") call a file to store base information here
 def configure_django():
+    print("Step 2/4")
     os.system(f"python3 manage.py makemigrations")
     os.system(f"python3 manage.py migrate")
+    os.system(f"python3 manage.py flush --yes")
+
 
 def crawl():
-    os.system(f"cd idord_infograther && scrapy crawl railsgoatLogin")
+    os.system(f"clear")
+    print("Please Enter the web link: ")
+    
+    try:
+        pass
+        # text = input()
+
+        # os.chdir('idord_infograther')
+        # file= open("link_to_crawl.txt","w")
+        # file.write(text)
+        # file.close()
+        # os.chdir(BASE_DIR)
+        
+        # os.system(f"clear")
+        # os.system(f"cd idord_infograther && scrapy crawl railsgoatNotLogin")
+        # os.system(f"cd idord_infograther && scrapy crawl railsgoatLogin")
+        # print("Step 3/4")
+
+    except:
+        pass
 
 def attack():
+    print("Step 4/4")
     os.system(f"python3 Attack.py")
 
-# configure_django()
-# crawl()
+
+configure_django()
+crawl()
 attack()
 
 

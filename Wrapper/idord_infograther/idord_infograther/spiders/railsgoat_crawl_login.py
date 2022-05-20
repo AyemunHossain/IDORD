@@ -1,14 +1,22 @@
 import scrapy
 from ..items import *
 from scrapy.http import FormRequest
+import os
 
 class CrawlRailsGoat(scrapy.Spider):
-
+    
     name = "railsgoatLogin"
 
+    def _get_url(self):
+        file= open("link_to_crawl.txt","r")
+        try:
+            return file.readline()
+        except:
+            return None
+        
     def __init__(self, config_file = None, *args, **kwargs):                    
         super(CrawlRailsGoat, self).__init__(*args, **kwargs)   
-        self.start_urls = ["http://0.0.0.0:3000/"]
+        self.start_urls = [self._get_url()]
 
     def start_requests(self):
         for url in self.start_urls:
@@ -27,7 +35,7 @@ class CrawlRailsGoat(scrapy.Spider):
                 token = inp.css("input::attr(value)").extract()
                 if (token  and type(token)!=str):
                     
-                    return FormRequest(url="http://0.0.0.0:3000/sessions/",formdata={
+                    return FormRequest(url=f"{self.start_urls[0]}/sessions/",formdata={
                         input_name:token[0],
                         'email':'a@a.com',
                         'password':'ashikashik',},callback=self.start_crawling_after_login)
@@ -37,7 +45,7 @@ class CrawlRailsGoat(scrapy.Spider):
         item = HLinkItem()
         links_after_login = response.css('a::attr(href)').extract()
         for link in links_after_login:
-            print(f"-----{link}")
+            item['base_link'] = self.start_urls[0]
             item['link'] = link
             item['tag'] = 'after_login'
             yield item
