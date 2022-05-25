@@ -58,17 +58,17 @@ def crawl():
     
     try:
         pass
-        # text = input()
+        text = input()
 
-        # os.chdir('idord_infograther')
-        # file= open("link_to_crawl.txt","w")
-        # file.write(text)
-        # file.close()
-        # os.chdir(BASE_DIR)
+        os.chdir('idord_infograther')
+        file= open("link_to_crawl.txt","w")
+        file.write(text)
+        file.close()
+        os.chdir(BASE_DIR)
         
         # os.system(f"clear")
-        # os.system(f"cd idord_infograther && scrapy crawl railsgoatNotLogin")
-        # os.system(f"cd idord_infograther && scrapy crawl railsgoatLogin")
+        os.system(f"cd idord_infograther && scrapy crawl railsgoatNotLogin")
+        os.system(f"cd idord_infograther && scrapy crawl railsgoatLogin")
         # print("Step 3/4")
 
     except:

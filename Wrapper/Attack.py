@@ -8,7 +8,7 @@ django.setup()
 from common import main_common_pattern_to_traverse_a_website as MAIN_COMMON_PATTERN
 from django.db import transaction
 
-# os.system("clear")
+os.system("clear")
 
 import requests
 from core.models import LinkActionItem, LinkActionItemPost, LinkActionItemResponse, FormItem, FormDetailsItem, LinkItem
@@ -27,7 +27,7 @@ BASE_LINK = _get_url()
 def _get_api():
     api = BASE_LINK.split("/")
     
-    return [f"http://api.{api[2]}","http://localhost:5000","http://localhost:5001",
+    return [f"http://api.0.0.0.0:3000","http://localhost:5000","http://localhost:5001",
                         "http://localhost:5002","http://localhost:5003","http://localhost:5004",
                         "http://localhost:5005","http://localhost:5006"]
 
@@ -190,7 +190,7 @@ def post_attack():
             r = session.post(l.link,headers=headers,data=payload)
             if r.status_code == 201:
                 
-                print(f"________IDOR__________POST{l.link}")
+                print(f"________IDOR__________POST : {l.link}")
                 LinkActionItemResponse.objects.create(action="post",action_link = l.link,status="post_idor",tag="Hacker Can create a new entry in your database")
                 print("___________________________________________________")
         except:
@@ -211,19 +211,18 @@ def put_attack():
 
    
     for l in links:
-        print("")
         try:
+            
             r = session.put(l.link,headers=headers,data=payload)
-            if r.status_code == 201:
+            # print(l.link,r.status_code)
+            if r.status_code ==200:
                 
-                print(f"________IDOR__________PUT{l.link}")
-                    #LinkActionItemResponse.objects.create(action=actionItem,status="get_idor",effected_full_page=data.text)
+                print(f"________IDOR__________PUT : {l.link}")
+                LinkActionItemResponse.objects.create(action="put",action_link = l.link,status="put_idor",tag="Hacker Can changes your database")
                 print("___________________________________________________")
         except:
             pass
-        # if(r.status_code==200):
-        #     r = r 
-        #     break
+
 
 
 
@@ -238,16 +237,13 @@ def patch_attack():
     for l in links:
         try:
             r = session.patch(l.link,headers=headers,data=payload)
-            if r.status_code == 201:
+            if r.status_code == 200:
                 
-                print(f"________IDOR__________patch{l.link}")
-                    #LinkActionItemResponse.objects.create(action=actionItem,status="get_idor",effected_full_page=data.text)
+                print(f"________IDOR__________patch : {l.link}")
+                LinkActionItemResponse.objects.create(action="patch",action_link = l.link,status="patch_idor",tag="Hacker Can changes your database")
                 print("___________________________________________________")
         except:
             pass
-        # if(r.status_code==200):
-        #     r = r 
-        #     break
 
 
 
@@ -261,11 +257,11 @@ def delete_attack():
    
     for l in links:
         try:
-            r = session.delete(l.link,headers=headers,data=payload)
-            if r.status_code == 201:
+            r = session.delete(l.link,headers=headers)
+            if r.status_code == 200:
                 
-                print(f"________IDOR__________Delete{l.link}")
-                    #LinkActionItemResponse.objects.create(action=actionItem,status="get_idor",effected_full_page=data.text)
+                print(f"________IDOR__________Delete : {l.link}")
+                LinkActionItemResponse.objects.create(action="delete",action_link = l.link,status="delete_idor",tag="Hacker Can delete your database entry")
                 print("___________________________________________________")
         except:
             pass
@@ -275,4 +271,8 @@ def delete_attack():
 
 
 post_attack()
+put_attack()
+patch_attack()
+delete_attack()
+
 # get_attack()
