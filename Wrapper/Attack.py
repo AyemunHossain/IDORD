@@ -8,7 +8,7 @@ django.setup()
 from common import main_common_pattern_to_traverse_a_website as MAIN_COMMON_PATTERN
 from django.db import transaction
 
-# os.system("clear")
+os.system("clear")
 
 import requests
 from core.models import LinkActionItem, LinkActionItemPost, LinkActionItemResponse, FormItem, FormDetailsItem, LinkItem
@@ -25,11 +25,13 @@ def _get_url():
 BASE_LINK = _get_url()
 
 def _get_api():
-    return [f"https://api.{BASE_LINK}",f"https://{BASE_LINK}"]
+    return [f"http://api.{BASE_LINK}",f"http://{BASE_LINK}",f"https://api.{BASE_LINK}",f"https://{BASE_LINK}"]
 
 API_LINKS = _get_api()
+BASE_LINK_GET = "http://"+BASE_LINK
 
-os.system("clear")
+
+# os.system("clear")
 
 
 LOGIN_LINK = ['login','Login','signin','sessions']
@@ -60,6 +62,7 @@ def generateAttack():
                             obj = LinkActionItem.objects.create(link=BASE_LINK+'/'.join(matching),orginal_param=original,manupulated_param=matching[i])
                             #print(obj)
                             obj.save()
+
                             for API_LINK in API_LINKS:
                                 obj2 = LinkActionItem.objects.create(link=API_LINK+'/'.join(matching),orginal_param=original,manupulated_param=matching[i])
                                 #print(obj2)
@@ -141,7 +144,7 @@ def get_attack():
     #login scripts
     r = ""
     for i in LOGIN_LINK:
-        r = session.post(BASE_LINK+f"/{i}/",headers=headers,data=payload)
+        r = session.post(BASE_LINK_GET+f"/{i}/",headers=headers,data=payload)
         if(r.status_code==200):
             r = r 
             break
@@ -156,10 +159,11 @@ def get_attack():
                 result = checkSansativeInfo(data.text)
                 
                 if len(result)>0:
-                    print(actionItem.link)
-                    print(f"_________________________________________\nGET")
+                    print(f"___________________________________________________\nGET : {actionItem.link}")
                     #LinkActionItemResponse.objects.create(action=actionItem,status="get_idor",effected_full_page=data.text)
-                    print("___________________________________________")
+                    print("_____________________________________________________")
+                    return 1
+                
         except Exception as e:
             pass
 
@@ -178,14 +182,13 @@ def attack():
 
 
 def post_attack():
-   
     links  = LinkActionItemPost.objects.all()
 
     headers = {'User-Agent': 'Mozilla/5.0'}
     payload = {'title':'actualHack on post method','name':'actualHackName on post method'}
     session = requests.Session()
 
-   
+    
     for l in links:
         try:
             r = session.post(l.link,headers=headers,data=payload)
@@ -194,7 +197,7 @@ def post_attack():
                 print(f"______________________________________________\nPOST IDOR: {l.link}")
                 LinkActionItemResponse.objects.create(action="post",action_link = l.link,status="post_idor",tag="Hacker Can create a new entry in your database")
                 print("_______________________________________________")
-                break
+                return 1
         except:
             pass
         # if(r.status_code==200):
@@ -222,7 +225,7 @@ def put_attack():
                 print(f"______________________________________________\nPUT IDOR: {l.link}")
                 LinkActionItemResponse.objects.create(action="put",action_link = l.link,status="put_idor",tag="Hacker Can changes your database")
                 print("________________________________________________")
-                break
+                return 1
         except:
             pass
 
@@ -245,7 +248,7 @@ def patch_attack():
                 print(f"______________________________________________\nPATCH IDOR: {l.link}")
                 LinkActionItemResponse.objects.create(action="patch",action_link = l.link,status="patch_idor",tag="Hacker Can changes your database")
                 print("________________________________________________")
-                break
+                return 1
         except:
             pass
 
@@ -267,7 +270,7 @@ def delete_attack():
                 print(f"______________________________________________\nDELETE IDOR:{l.link}")
                 LinkActionItemResponse.objects.create(action="delete",action_link = l.link,status="delete_idor",tag="Hacker Can delete your database entry")
                 print("________________________________________________")
-                break
+                return 1
         except:
             pass
         # if(r.status_code==200):
@@ -275,9 +278,30 @@ def delete_attack():
         #     break
 
 
-post_attack()
-put_attack()
-patch_attack()
-delete_attack()
+for i in range(1):
+    if(get_attack()):
+        break
+    else:
+        print("No GET IDOR Vulnerability Found")
 
-# get_attack()
+    if(post_attack()):
+        break
+    else:
+        print("No POST IDOR Vulnerability Found")
+
+    if(put_attack()):
+        break
+    else:
+        print("No PUT IDOR Vulnerability Found")
+
+
+    if(patch_attack()):
+        break
+    else:
+        print("No PATCH IDOR Vulnerability Found")
+
+    if(delete_attack()):
+        break
+    else:
+        print("No DELETE IDOR Vulnerability Found")
+

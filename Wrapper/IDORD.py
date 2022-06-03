@@ -2,7 +2,7 @@ import os
 import subprocess
 import sys
 import time
-
+import datetime
 
 BASE_DIR = os.getcwd()
 
@@ -72,8 +72,6 @@ def attack():
     os.system(f"python3 Attack.py")
 
 
-
-
 def takeInput():
     os.system(f"clear")
     print("Please Enter the web link: ")
@@ -84,6 +82,13 @@ def takeInput():
     file.close()
     os.chdir(BASE_DIR)
 
+def sec_to_min(seconds):
+    a=str(seconds//3600)
+    b=str((seconds%3600)//60)
+    c=str(round((seconds%3600)%60))
+    return f"{b} mins {c} seconds"
+
+
 configure_django()
 takeInput()
 
@@ -93,7 +98,10 @@ crawl()
 attack()
 end = time.time()
 
-print(f"Runtime of the program is {round(end - start, 3)}")
+print(f"Runtime of the program is {sec_to_min((end - start))}")
+
+
+
 
 
 # p = Popen(['scrapy', 'crawl','signupRailsgoat','-a',f'start_url={url}',],cwd='idord_infograther/', stdout=PIPE, stderr = PIPE)

@@ -16,7 +16,7 @@ class CrawlRailsGoat(scrapy.Spider):
         
     def __init__(self, config_file = None, *args, **kwargs):                    
         super(CrawlRailsGoat, self).__init__(*args, **kwargs)   
-        self.start_urls = [f"https://{self._get_url()}"]
+        self.start_urls = [f"http://{self._get_url()}"]
 
     def start_requests(self):
         for url in self.start_urls:
@@ -42,6 +42,7 @@ class CrawlRailsGoat(scrapy.Spider):
 
     def start_crawling_after_login(self,response):
         
+        print("_----------------------------------------------______")
         item = HLinkItem()
         links_after_login = response.css('a::attr(href)').extract()
         for link in links_after_login:
