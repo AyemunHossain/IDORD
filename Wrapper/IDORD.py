@@ -1,6 +1,7 @@
 import os
 import subprocess
 import sys
+import time
 
 
 BASE_DIR = os.getcwd()
@@ -22,7 +23,6 @@ class colors:
     UNDERLINE = '\033[4m'
 
 # x = subprocess.check_output(['scrapy', 'crawl', 'prothomalo'], cwd='idord_infograther/')
-
 # print(f">>>>>>>>>>>>>>>>>{x}>>>>>>>>>>>>>>")
 
 
@@ -47,26 +47,19 @@ except:
 # os.system(f"python3 Attack.py") call a file to store base information here
 def configure_django():
     print("Step 2/4")
+    os.system(f"rm db.sqlite3")
     os.system(f"python3 manage.py makemigrations")
     os.system(f"python3 manage.py migrate")
     os.system(f"python3 manage.py flush --yes")
 
 
 def crawl():
-    os.system(f"clear")
-    print("Please Enter the web link: ")
+
     
     try:
-        pass
-        text = input()
 
-        os.chdir('idord_infograther')
-        file= open("link_to_crawl.txt","w")
-        file.write(text)
-        file.close()
-        os.chdir(BASE_DIR)
         
-        # os.system(f"clear")
+        os.system(f"clear")
         os.system(f"cd idord_infograther && scrapy crawl railsgoatNotLogin")
         os.system(f"cd idord_infograther && scrapy crawl railsgoatLogin")
         # print("Step 3/4")
@@ -79,9 +72,28 @@ def attack():
     os.system(f"python3 Attack.py")
 
 
+
+
+def takeInput():
+    os.system(f"clear")
+    print("Please Enter the web link: ")
+    text = input()
+    os.chdir('idord_infograther')
+    file= open("link_to_crawl.txt","w")
+    file.write(text)
+    file.close()
+    os.chdir(BASE_DIR)
+
 configure_django()
+takeInput()
+
+
+start = time.time()
 crawl()
 attack()
+end = time.time()
+
+print(f"Runtime of the program is {round(end - start, 3)}")
 
 
 # p = Popen(['scrapy', 'crawl','signupRailsgoat','-a',f'start_url={url}',],cwd='idord_infograther/', stdout=PIPE, stderr = PIPE)

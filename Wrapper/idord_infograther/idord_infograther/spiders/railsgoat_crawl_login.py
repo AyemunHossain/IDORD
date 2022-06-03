@@ -16,7 +16,7 @@ class CrawlRailsGoat(scrapy.Spider):
         
     def __init__(self, config_file = None, *args, **kwargs):                    
         super(CrawlRailsGoat, self).__init__(*args, **kwargs)   
-        self.start_urls = [self._get_url()]
+        self.start_urls = [f"https://{self._get_url()}"]
 
     def start_requests(self):
         for url in self.start_urls:

@@ -8,7 +8,7 @@ django.setup()
 from common import main_common_pattern_to_traverse_a_website as MAIN_COMMON_PATTERN
 from django.db import transaction
 
-os.system("clear")
+# os.system("clear")
 
 import requests
 from core.models import LinkActionItem, LinkActionItemPost, LinkActionItemResponse, FormItem, FormDetailsItem, LinkItem
@@ -25,13 +25,12 @@ def _get_url():
 BASE_LINK = _get_url()
 
 def _get_api():
-    api = BASE_LINK.split("/")
-    
-    return [f"http://api.0.0.0.0:3000","http://localhost:5000","http://localhost:5001",
-                        "http://localhost:5002","http://localhost:5003","http://localhost:5004",
-                        "http://localhost:5005","http://localhost:5006"]
+    return [f"https://api.{BASE_LINK}",f"https://{BASE_LINK}"]
 
 API_LINKS = _get_api()
+
+os.system("clear")
+
 
 LOGIN_LINK = ['login','Login','signin','sessions']
 SANSATIVE_INFO = ["social security numbers","ssn", "driver license number", "financial identifiers", "citizen visa code","test scores", "Biometric identifiers", "Account balances", "Bank account number", "credit card number", "payment history", "income history", "expiration","CVV","CVV2","PIN","BIN"]
@@ -158,11 +157,12 @@ def get_attack():
                 
                 if len(result)>0:
                     print(actionItem.link)
-                    print(f"________IDOR__________GET")
+                    print(f"_________________________________________\nGET")
                     #LinkActionItemResponse.objects.create(action=actionItem,status="get_idor",effected_full_page=data.text)
-                    print("___________________________________________________")
+                    print("___________________________________________")
         except Exception as e:
             pass
+
 
 def attack():
     
@@ -178,6 +178,7 @@ def attack():
 
 
 def post_attack():
+   
     links  = LinkActionItemPost.objects.all()
 
     headers = {'User-Agent': 'Mozilla/5.0'}
@@ -190,9 +191,10 @@ def post_attack():
             r = session.post(l.link,headers=headers,data=payload)
             if r.status_code == 201:
                 
-                print(f"________IDOR__________POST : {l.link}")
+                print(f"______________________________________________\nPOST IDOR: {l.link}")
                 LinkActionItemResponse.objects.create(action="post",action_link = l.link,status="post_idor",tag="Hacker Can create a new entry in your database")
-                print("___________________________________________________")
+                print("_______________________________________________")
+                break
         except:
             pass
         # if(r.status_code==200):
@@ -217,9 +219,10 @@ def put_attack():
             # print(l.link,r.status_code)
             if r.status_code ==200:
                 
-                print(f"________IDOR__________PUT : {l.link}")
+                print(f"______________________________________________\nPUT IDOR: {l.link}")
                 LinkActionItemResponse.objects.create(action="put",action_link = l.link,status="put_idor",tag="Hacker Can changes your database")
-                print("___________________________________________________")
+                print("________________________________________________")
+                break
         except:
             pass
 
@@ -238,10 +241,11 @@ def patch_attack():
         try:
             r = session.patch(l.link,headers=headers,data=payload)
             if r.status_code == 200:
-                
-                print(f"________IDOR__________patch : {l.link}")
+
+                print(f"______________________________________________\nPATCH IDOR: {l.link}")
                 LinkActionItemResponse.objects.create(action="patch",action_link = l.link,status="patch_idor",tag="Hacker Can changes your database")
-                print("___________________________________________________")
+                print("________________________________________________")
+                break
         except:
             pass
 
@@ -260,9 +264,10 @@ def delete_attack():
             r = session.delete(l.link,headers=headers)
             if r.status_code == 200:
                 
-                print(f"________IDOR__________Delete : {l.link}")
+                print(f"______________________________________________\nDELETE IDOR:{l.link}")
                 LinkActionItemResponse.objects.create(action="delete",action_link = l.link,status="delete_idor",tag="Hacker Can delete your database entry")
-                print("___________________________________________________")
+                print("________________________________________________")
+                break
         except:
             pass
         # if(r.status_code==200):
