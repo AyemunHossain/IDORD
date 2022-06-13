@@ -31,9 +31,6 @@ API_LINKS = _get_api()
 BASE_LINK_GET = "http://"+BASE_LINK
 
 
-# os.system("clear")
-
-
 LOGIN_LINK = ['login','Login','signin','sessions']
 SANSATIVE_INFO = ["social security numbers","ssn", "driver license number", "financial identifiers", "citizen visa code","test scores", "Biometric identifiers", "Account balances", "Bank account number", "credit card number", "payment history", "income history", "expiration","CVV","CVV2","PIN","BIN"]
     
@@ -200,10 +197,6 @@ def post_attack():
                 return 1
         except:
             pass
-        # if(r.status_code==200):
-        #     r = r 
-        #     break
-
 
 
 
@@ -273,9 +266,7 @@ def delete_attack():
                 return 1
         except:
             pass
-        # if(r.status_code==200):
-        #     r = r 
-        #     break
+
 
 
 for i in range(1):

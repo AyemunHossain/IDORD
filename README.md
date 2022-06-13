@@ -6,23 +6,16 @@
 
 ## Installation
 
-IDORD requires Python and pip to run.
+IDORD requires Python3 and pip to run.
 
 Install the dependencies and start the tool.
 
 ```sh
 pip install -r requirements.txt
 
-#Active the virtual env
+#Active the virtual env [varies in linux and windows]
 
 RUN: cd Wrapper 
-RUN: python3 manage.py crawl
-#bang bang
-```
-
-```sh
-
-RUN: python3 manage.py makemigrations
-RUN: python3 manage.py migrate
+RUN: python3 IDORD.py
 #bang bang
 ```
