@@ -28,7 +28,7 @@ pyOpenSSL==22.0.0
 queuelib==1.6.2
 requests==2.27.1
 requests-file==1.5.1
-Scrapy==2.6.1
+Scrapy==2.8.0
 scrapy-djangoitem==1.1.1
 scrapy-proxy-pool==0.1.9
 scrapy-user-agents==0.1.1
