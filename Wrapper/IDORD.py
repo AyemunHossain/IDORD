@@ -23,9 +23,6 @@ class colors:
     UNDERLINE = '\033[4m'
 
 # x = subprocess.check_output(['scrapy', 'crawl', 'prothomalo'], cwd='idord_infograther/')
-# print(f">>>>>>>>>>>>>>>>>{x}>>>>>>>>>>>>>>")
-
-
 
 #Below this for Production 
 from subprocess import Popen, PIPE
@@ -54,11 +51,7 @@ def configure_django():
 
 
 def crawl():
-
-    
     try:
-
-        
         os.system(f"clear")
         os.system(f"cd idord_infograther && scrapy crawl railsgoatNotLogin")
         os.system(f"cd idord_infograther && scrapy crawl railsgoatLogin")
@@ -98,8 +91,7 @@ crawl()
 attack()
 end = time.time()
 
-print(f"Runtime of the program is {sec_to_min((end - start))}")
-
+print(f"Total time took: {sec_to_min((end - start))}")
 
 
 

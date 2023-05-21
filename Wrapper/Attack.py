@@ -7,33 +7,33 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'Wrapper.settings'
 django.setup()
 from common import main_common_pattern_to_traverse_a_website as MAIN_COMMON_PATTERN
 from django.db import transaction
-
-os.system("clear")
-
 import requests
 from core.models import LinkActionItem, LinkActionItemPost, LinkActionItemResponse, FormItem, FormDetailsItem, LinkItem
+from bs4 import BeautifulSoup
+
+LOGIN_LINK = ['login','Login','signin','sessions']
+SANSATIVE_INFO = ["social security numbers","ssn", "driver license number", "financial identifiers", "citizen visa code","test scores", "Biometric identifiers", "Account balances", "Bank account number", "credit card number", "payment history", "income history", "expiration","CVV","CVV2","PIN","BIN"]
+
+
+os.system("clear")
 
 def _get_url():
     os.chdir('idord_infograther')
     file= open("link_to_crawl.txt","r")
     try:
         return file.readline()
-
     except:
         return None
-
-BASE_LINK = _get_url()
 
 def _get_api():
     return [f"http://api.{BASE_LINK}",f"http://{BASE_LINK}",f"https://api.{BASE_LINK}",f"https://{BASE_LINK}"]
 
+BASE_LINK = _get_url()
 API_LINKS = _get_api()
 BASE_LINK_GET = "http://"+BASE_LINK
 
 
-LOGIN_LINK = ['login','Login','signin','sessions']
-SANSATIVE_INFO = ["social security numbers","ssn", "driver license number", "financial identifiers", "citizen visa code","test scores", "Biometric identifiers", "Account balances", "Bank account number", "credit card number", "payment history", "income history", "expiration","CVV","CVV2","PIN","BIN"]
-    
+ 
 def has_numbers(inputString):
     return any(char.isdigit() for char in inputString)
 
@@ -44,10 +44,7 @@ def generateAttack():
 
     for link in LinkItem.objects.all():
         if(has_numbers(link.link)):
-
-            # full_link = BASE_LINK+str(link.link)
             matching = re.split("\W+",str(link.link))
-            # print(','.join(out))
             for i in range(len(matching)):
                 
                 original= matching[i]
@@ -57,22 +54,17 @@ def generateAttack():
                         for j in range(10):
                             matching[i]=str(j)
                             obj = LinkActionItem.objects.create(link=BASE_LINK+'/'.join(matching),orginal_param=original,manupulated_param=matching[i])
-                            #print(obj)
                             obj.save()
-
                             for API_LINK in API_LINKS:
                                 obj2 = LinkActionItem.objects.create(link=API_LINK+'/'.join(matching),orginal_param=original,manupulated_param=matching[i])
-                                #print(obj2)
                                 obj2.save()
-
                 except Exception as e:        
                     pass
+
     try:
         for API_LINK in API_LINKS:
             for i in MAIN_COMMON_PATTERN:
                 for j in range(10):
-                    
-                    
                     try:
                         obj2 = LinkActionItem.objects.create(link=(API_LINK+'/'+str(i)+'/'+str(j)),manupulated_param=str(j))
                         obj2.save()
@@ -99,7 +91,7 @@ def generateAttack():
 generateAttack()
 
 def checkSansativeInfo(html_page):
-    from bs4 import BeautifulSoup
+
     soup = BeautifulSoup(html_page, 'html.parser')
     result = []
     for th in soup.find_all('th'):
@@ -157,7 +149,6 @@ def get_attack():
                 
                 if len(result)>0:
                     print(f"___________________________________________________\nGET : {actionItem.link}")
-                    #LinkActionItemResponse.objects.create(action=actionItem,status="get_idor",effected_full_page=data.text)
                     print("_____________________________________________________")
                     return 1
                 
@@ -284,8 +275,6 @@ for i in range(1):
         break
     else:
         print("No PUT IDOR Vulnerability Found")
-
-
     if(patch_attack()):
         break
     else:
