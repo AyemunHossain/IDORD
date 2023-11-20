@@ -37,7 +37,7 @@ six==1.16.0
 soupsieve==2.3.2.post1
 sqlparse==0.4.2
 tldextract==3.3.0
-Twisted==22.4.0
+Twisted==22.10.0
 typing_extensions==4.2.0
 ua-parser==0.10.0
 urllib3==1.26.9
