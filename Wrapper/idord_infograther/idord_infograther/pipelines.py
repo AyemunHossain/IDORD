@@ -1,29 +1,39 @@
-from itemadapter import ItemAdapter
-import sqlite3
 from scrapy.pipelines.files import FilesPipeline
-from core.models import LinkActionItem, LinkActionItemResponse, FormItem, FormDetailsItem, LinkItem
 
-# A demo pipeline which can create a table and store data in it
+from core.models import LinkItem
+from core.models import FormDetailsItem as FormDetailsModel
+
+
 class multiperpousePipeline:
-    
+    """Persist scraped items into their backing Django models."""
+
     def process_item(self, item, spider):
-        model_class = getattr(item, 'django_model')
-        if (model_class.__dict__==LinkItem.__dict__):
-            obj = model_class.objects.create(link=item['link'], base_link =item['base_link'],tag=(item['tag'] or None))
-            obj.save()
+        model_class = getattr(item, "django_model")
+
+        if model_class is LinkItem:
+            model_class.objects.create(
+                link=item.get("link"),
+                base_link=item.get("base_link"),
+                tag=item.get("tag") or None,
+            )
             return item
 
-        elif(model_class.__dict__==FormDetailsItem.__dict__):
+        if model_class is FormDetailsModel:
             try:
-                obj = model_class.objects.create(link=item['link'], page_link=item['page_link'], type=item['type'], is_auth_related=item['is_auth_related'])
-                obj.save()
-            except Exception as E:
-                print(f"_______________________{E}________________________________")
+                model_class.objects.create(
+                    link=item.get("link"),
+                    page_link=item.get("page_link"),
+                    type=item.get("type"),
+                    is_auth_related=item.get("is_auth_related", False),
+                )
+            except Exception as error:
+                print(f"_______________________{error}________________________________")
             return item
-        
+
+        return item
+
 
 class FiledownloadPipeline(FilesPipeline):
-    
+
     def file_path(self, request, response=None, info=None):
-        file_name: str = request.url.split("/")[-1]
-        return file_name
+        return request.url.split("/")[-1]

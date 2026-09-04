@@ -89,7 +89,7 @@ ITEM_PIPELINES = {
     
 }
 
-FILES_STORE = r"/home/cyrus/Desktop/test/IDORD"
+FILES_STORE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "downloads")
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html

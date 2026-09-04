@@ -1,107 +1,90 @@
 import os
-import subprocess
 import sys
 import time
-import datetime
 
 BASE_DIR = os.getcwd()
 
-class colors:
-    """Note you need to add  colors.ENDC every time you changed the color 
-       like this : 
-       print(colors.WARNING + "Warning" + colors.ENDC)
+
+class Colors:
+    """Terminal color codes.
+
+    Remember to append ``Colors.ENDC`` after each colored segment, e.g.::
+
+        print(Colors.WARNING + "Warning" + Colors.ENDC)
     """
-    
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
 
-# x = subprocess.check_output(['scrapy', 'crawl', 'prothomalo'], cwd='idord_infograther/')
+    HEADER = "\033[95m"
+    OKBLUE = "\033[94m"
+    OKCYAN = "\033[96m"
+    OKGREEN = "\033[92m"
+    WARNING = "\033[93m"
+    FAIL = "\033[91m"
+    ENDC = "\033[0m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
 
-#Below this for Production 
-from subprocess import Popen, PIPE
-import sys
-import os
 
-print("Step 1/4")
-# p = Popen(['scrapy', 'crawl','railsgoatNotLogin'],cwd='idord_infograther/', stdout=PIPE, stderr = PIPE)
-
-try:
-    url = sys.argv[1]
-    print(f"<================> {url} <================>")
-except:
-    print("<_____Using default_____>")
-
-# os.system(f"cd idord_infograther && scrapy crawl railsgoatNotLogin")
-# os.system(f"cd idord_infograther && scrapy crawl signupRailsgoat -a start_url={url}")
-
-# os.system(f"python3 Attack.py") call a file to store base information here
 def configure_django():
+    """Reset the local SQLite datastore and apply a fresh schema."""
     print("Step 2/4")
-    os.system(f"rm db.sqlite3")
-    os.system(f"python3 manage.py makemigrations")
-    os.system(f"python3 manage.py migrate")
-    os.system(f"python3 manage.py flush --yes")
+    os.system("rm -f db.sqlite3")
+    os.system("python3 manage.py makemigrations")
+    os.system("python3 manage.py migrate")
+    os.system("python3 manage.py flush --no-input")
 
 
 def crawl():
+    """Run the Scrapy spiders that gather links from the target."""
     try:
-        os.system(f"clear")
-        os.system(f"cd idord_infograther && scrapy crawl railsgoatNotLogin")
-        os.system(f"cd idord_infograther && scrapy crawl railsgoatLogin")
-        # print("Step 3/4")
-
-    except:
+        os.system("clear")
+        os.system("cd idord_infograther && scrapy crawl railsgoatNotLogin")
+        os.system("cd idord_infograther && scrapy crawl railsgoatLogin")
+    except OSError:
         pass
 
+
 def attack():
+    """Run the attack/detection stage against the crawled links."""
     print("Step 4/4")
-    os.system(f"python3 Attack.py")
+    os.system("python3 Attack.py")
 
 
-def takeInput():
-    os.system(f"clear")
+def take_input():
+    """Prompt for the target link and hand it to the crawler."""
+    os.system("clear")
     print("Please Enter the web link: ")
     text = input()
-    os.chdir('idord_infograther')
-    file= open("link_to_crawl.txt","w")
-    file.write(text)
-    file.close()
+    os.chdir("idord_infograther")
+    with open("link_to_crawl.txt", "w") as handle:
+        handle.write(text.strip())
     os.chdir(BASE_DIR)
 
+
 def sec_to_min(seconds):
-    a=str(seconds//3600)
-    b=str((seconds%3600)//60)
-    c=str(round((seconds%3600)%60))
-    return f"{b} mins {c} seconds"
+    """Format a duration in seconds as ``M mins S seconds``."""
+    minutes = str((seconds % 3600) // 60)
+    remaining = str(round((seconds % 3600) % 60))
+    return f"{minutes} mins {remaining} seconds"
 
 
-configure_django()
-takeInput()
+def main():
+    print("Step 1/4")
+    try:
+        url = sys.argv[1]
+        print(f"<================> {url} <================>")
+    except IndexError:
+        print("<_____Using default_____>")
+
+    configure_django()
+    take_input()
+
+    start = time.time()
+    crawl()
+    attack()
+    end = time.time()
+
+    print(f"Total time took: {sec_to_min(end - start)}")
 
 
-start = time.time()
-crawl()
-attack()
-end = time.time()
-
-print(f"Total time took: {sec_to_min((end - start))}")
-
-
-
-
-# p = Popen(['scrapy', 'crawl','signupRailsgoat','-a',f'start_url={url}',],cwd='idord_infograther/', stdout=PIPE, stderr = PIPE)
-
-# output = p.communicate()[0]
-
-# if p.returncode != 0: 
-#     print(f'------------{p.communicate()}-------------')
-#     print("> Setp Failed")
-# else:
-#     print("> Setp 1 Completed Successfully")
+if __name__ == "__main__":
+    main()
